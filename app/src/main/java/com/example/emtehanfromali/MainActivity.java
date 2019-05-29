@@ -1,5 +1,6 @@
 package com.example.emtehanfromali;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
@@ -11,6 +12,9 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ItemDecoration;
 import android.util.Log;
 import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Cache;
 import com.android.volley.Network;
@@ -31,19 +35,23 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String URL="http://triangle-sh.ir/getPsychos.php";
+    private static final String URL="http://triangle-sh.ir/getVol.php";
     private static final String TAG = MainActivity.class.getName();
 
-    private List<Psychologists> psychologistsList;
-    Psychologists psychologists=new Psychologists();
+
+
     RecyclerView recycler_view;
     PsychologistAdapter adapter;
     RequestQueue mRequestQueue;
+    public ArrayList<Psychologists> psychologistsList;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,28 +59,47 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         psychologistsList=new ArrayList<>();
-        recycler_view=findViewById(R.id.recycler_view);
-
-        //setting up volley request queue
-        mRequestQueue = Volley.newRequestQueue(MainActivity.this);
-        getJsonData();
 
         //initialising recyclerview and setting adapter to the recyclerview
+
+
+        getJsonData();
+
+
         recycler_view = findViewById(R.id.recycler_view);
-        adapter = new PsychologistAdapter(psychologistsList,this);
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(MainActivity.this);
-        recycler_view.setLayoutManager(mLayoutManager);
-        recycler_view.setItemAnimator(new DefaultItemAnimator());
-        adapter=new PsychologistAdapter(psychologistsList,MainActivity.this);
+        recycler_view.setHasFixedSize(true);
 
-        recycler_view.setAdapter(adapter);
+        recycler_view.setLayoutManager(new LinearLayoutManager(this));
 
 
+
+        recycler_view.addOnItemTouchListener(new RVItemTouchListener(this, recycler_view,
                 new MyClickListener() {
                     @Override
-                    public void onClick(View view, int position) {
-                        Psychologists psychologists=psychologistsList.get(position);
+                    public void onClick(View view, int pos) {
+                        Toast.makeText(MainActivity.this,
+                                "<Click>\nposition =  " + pos + "\nPsychologists : " + psychologistsList.get(pos),
+                                Toast.LENGTH_SHORT).show();
                         Intent intent=new Intent(MainActivity.this,Main2Activity.class);
+                        intent.putExtra("name2",(psychologistsList.get(pos).getP_name()));
+                        intent.putExtra("prof",(psychologistsList.get(pos).getP_prof()));
+                        intent.putExtra("aks",psychologistsList.get(pos).getP_image());
+                        intent.putExtra("email",(psychologistsList.get(pos).getP_email()));
+                        intent.putExtra("ostan",(psychologistsList.get(pos).getP_province()));
+                        intent.putExtra("shahr",(psychologistsList.get(pos).getP_city()));
+                        intent.putExtra("address",(psychologistsList.get(pos).getP_address()));
+                        intent.putExtra("rooykard",(psychologistsList.get(pos).getP_rooy()));
+                        intent.putExtra("telegram",(psychologistsList.get(pos).getP_telegram()));
+                        intent.putExtra("tel1",(psychologistsList.get(pos).getP_telephone1()));
+                        intent.putExtra("tel2",(psychologistsList.get(pos).getP_telephone2()));
+                        intent.putExtra("point",(psychologistsList.get(pos).getP_point()));
+                        intent.putExtra("details",(psychologistsList.get(pos).getP_details()));
+                        intent.putExtra("madrak",(psychologistsList.get(pos).getP_cert()));
+                        intent.putExtra("id",(psychologistsList.get(pos).getP_ID()));
+                        intent.putExtra("insta",(psychologistsList.get(pos).getP_instagram()));
+
+                        startActivity(intent);
+
 
 
                     }
@@ -81,21 +108,33 @@ public class MainActivity extends AppCompatActivity {
                     public void onLongClick(View view, int position) {
 
                     }
-                };
+                }
+        ));
+
+
+
 
     }
 
-    public void getJsonData() {
+    private void getJsonData() {
 
-        StringRequest stringRequest=new StringRequest(Request.Method.POST,URL, new Response.Listener<String>() {
+
+        StringRequest stringRequest=new StringRequest(Request.Method.GET,URL,
+                new Response.Listener<String>() {
 
             @Override
             public void onResponse(String response) {
+
+
                 Log.i(TAG,"response: "+response);
+
                 try {
                     JSONArray ja=new JSONArray(response);
 
+
+
                     for (int i = 0; i < ja.length(); i++) {
+                        Psychologists psychologists=new Psychologists();
 
                         JSONObject jsonObject = ja.getJSONObject(i);
 
@@ -119,9 +158,13 @@ public class MainActivity extends AppCompatActivity {
                         psychologists.setP_voters(jsonObject.getInt("p_voters"));
                         psychologistsList.add(psychologists);
 
+
                     }
-                    adapter=new PsychologistAdapter(psychologistsList,MainActivity.this);
+                    adapter=new PsychologistAdapter(MainActivity.this,psychologistsList);
                     recycler_view.setAdapter(adapter);
+
+
+
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -136,9 +179,11 @@ public class MainActivity extends AppCompatActivity {
                 Log.i(TAG,"Error :" + error.toString());
             }
         });
+        mRequestQueue = Volley.newRequestQueue(MainActivity.this);
 
         mRequestQueue.add(stringRequest);
 
 
     }
+
 }

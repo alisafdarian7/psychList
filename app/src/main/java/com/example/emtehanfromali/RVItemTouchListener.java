@@ -1,5 +1,6 @@
 package com.example.emtehanfromali;
 
+
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.GestureDetector;
@@ -7,6 +8,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 public class RVItemTouchListener implements RecyclerView.OnItemTouchListener {
+
     private MyClickListener clickListener;
     private GestureDetector gestureDetector;
     public RVItemTouchListener(Context context, final RecyclerView recyclerView, final MyClickListener clickListener){

@@ -170,10 +170,7 @@ public class Psychologists {
     }
 
 
-    @Override
-    public String toString() {
-        return p_name+p_image;
-    }
+
 }
 
 
