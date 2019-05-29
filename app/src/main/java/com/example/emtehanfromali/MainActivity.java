@@ -44,13 +44,10 @@ public class MainActivity extends AppCompatActivity {
     private static final String URL="http://triangle-sh.ir/getVol.php";
     private static final String TAG = MainActivity.class.getName();
 
-
-
     RecyclerView recycler_view;
     PsychologistAdapter adapter;
     RequestQueue mRequestQueue;
     public ArrayList<Psychologists> psychologistsList;
-
 
 
     @Override
@@ -60,18 +57,13 @@ public class MainActivity extends AppCompatActivity {
 
         psychologistsList=new ArrayList<>();
 
-        //initialising recyclerview and setting adapter to the recyclerview
-
 
         getJsonData();
 
 
         recycler_view = findViewById(R.id.recycler_view);
         recycler_view.setHasFixedSize(true);
-
         recycler_view.setLayoutManager(new LinearLayoutManager(this));
-
-
 
         recycler_view.addOnItemTouchListener(new RVItemTouchListener(this, recycler_view,
                 new MyClickListener() {
@@ -81,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
                                 "<Click>\nposition =  " + pos + "\nPsychologists : " + psychologistsList.get(pos),
                                 Toast.LENGTH_SHORT).show();
                         Intent intent=new Intent(MainActivity.this,Main2Activity.class);
+
                         intent.putExtra("name2",(psychologistsList.get(pos).getP_name()));
                         intent.putExtra("prof",(psychologistsList.get(pos).getP_prof()));
                         intent.putExtra("aks",psychologistsList.get(pos).getP_image());
